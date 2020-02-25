@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    .game-container{
+      height: 100%;
+      width: 100%;
+    }
+
+    .header-row {
+      height: 10%;
+    }
+
+    .section-container {
+      height: auto;
+      padding: 0 100px !important;
+    }
+
+    .footer-container {
+      height: 10% !important;
+    }
+
+    button {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+    td, th {
+      border: 1px solid black;
+    }
+
+  </style>
+  <link rel='stylesheet' href='https://www.w3schools.com/w3css/4/w3.css' />
+
+  <script src='./scripts/campaign.js'></script>
+  <script src='./scripts/hoodActions.js'></script>
+  <script src='./scripts/setupPages.js'></script>
+
+</head>
+<body onload='startup()'>
+
+  <div class='game-container w3-display-container'>
+
+    <!-- HEADER AREA MENU/TITLE/HELP -->
+    <div class='header-row w3-row-padding w3-border'>
+
+      <div class='menu-btn-container w3-center w3-col s3'>
+        <button class='menu-btn w3-xxlarge'>&#9776;</button>
+      </div>
+
+      <div class='header-title-container w3-center w3-col s6'>
+        <h1 id='headerTitle'>Welcome</h1>
+      </div>
+
+      <div class='help-btn-container w3-center w3-col s3'>
+        <button class='help-btn w3-xxlarge'>?</button>
+      </div>
+
+    </div>
+
+    <!-- TRACK AREA HOOD/DISASTER -->
+    <div class='track-row w3-row-padding w3-border'>
+
+      <div class='w3-row-padding w3-center'>
+        <h2>The Hood Track</h2>
+        <table class='w3-table-all w3-border'>
+          <tr>
+            <th>Start</th>
+            <th> </th>
+            <th>E 1</th>
+            <th> </th>
+            <th>E 2</th>
+            <th> </th>
+            <th>S 1</th>
+            <th> </th>
+            <th>E 3</th>
+            <th> </th>
+            <th>S 2</th>
+            <th> </th>
+            <th>E 4</th>
+            <th> </th>
+            <th>S 3</th>
+          </tr>
+          <tr>
+            <td id='hood0'><b>Hood</b></td>
+            <td id='hood1'> </td>
+            <td id='hood2'> </td>
+            <td id='hood3'> </td>
+            <td id='hood4'> </td>
+            <td id='hood5'> </td>
+            <td id='hood6'> </td>
+            <td id='hood7'> </td>
+            <td id='hood8'> </td>
+            <td id='hood9'> </td>
+            <td id='hood10'> </td>
+            <td id='hood11'> </td>
+            <td id='hood12'> </td>
+            <td id='hood13'> </td>
+            <td id='hood14'> </td>
+          </tr>
+        </table>
+      </div>
+
+      <div class='w3-row-padding w3-center'>
+        <h2>The Disaster Track</h2>
+        <table class='w3-table-all w3-border'>
+          <tr>
+            <th>Slot 1</th>
+            <th>Slot 2</th>
+            <th>Slot 3</th>
+            <th>Slot 4</th>
+            <th>Slot 5</th>
+            <th>Slot 6</th>
+            <th>Slot 7</th>
+            <th>Game Over</th>
+          </tr>
+          <tr>
+            <td id='disaster1'>None</td>
+            <td id='disaster2'>None</td>
+            <td id='disaster3'>None</td>
+            <td id='disaster4'>None</td>
+            <td id='disaster5'>None</td>
+            <td id='disaster6'>None</td>
+            <td id='disaster7'>None</td>
+            <td id='disaster8'>None</td>
+          </tr>
+        </table>
+      </div>
+
+    </div>
+
+    <!-- SECTION AREA TITLE/DESCRIPTION -->
+    <div class='section-container w3-padding-large'>
+
+      <div class='section-header w3-center'>
+        <h2 id='sectionTitle'>Section Title</h2>
+      </div>
+
+      <div class='section-description w3-center'>
+        <p id='sectionDescription'>This is the description</p>
+      </div>
+
+    </div>
+
+    <!-- ACTIONS AREA YES/NO/QUANTITY -->
+    <div class='footer-row w3-row-padding w3-border'>
+
+      <div class='footer-left-btn-container w3-center w3-col s3'>
+        <button id='leftBtn' class='footer-left-btn w3-btn w3-red'>NO</button>
+      </div>
+
+      <div class='footer-quantity-container w3-col s6'>
+        <input id='quantityInput' class='w3-input w3-center w3-grey' type='number' min='0' max='3' value='1'></input>
+      </div>
+
+      <div class='footer-right-btn-container w3-center w3-col s3'>
+        <button id='rightBtn' class='footer-right-btn w3-btn w3-green'>YES</button>
+      </div>
+
+    </div>
+
+
+
+  </div>
+
+
+</body>
+</html>
