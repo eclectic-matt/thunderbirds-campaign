@@ -13,10 +13,10 @@ function showSetup(page){
     lBtn.visible = 'hidden';
     qInput.visible = 'hidden';
     rBtn.inner = 'Next';
-    //rBtn.onclick = 'showSetup(2)';
+    rBtn.onclick = 'showSetup(2)';
     // TESTING HERE!
     //rBtn.onclick = 'addDisasters(1)';
-    rBtn.onclick = 'pushOrAdd()';
+    //rBtn.onclick = 'pushOrAdd()';
 
   }else if (page === 2){
 

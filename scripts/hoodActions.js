@@ -1,6 +1,7 @@
 var hood = {};
 var map = {};
 var game = {};
+var schemes = {};
 
 function setupGame(){
   game.over = false;
@@ -70,17 +71,22 @@ function setupHood(){
   hood.tracks.hood = {};
   hood.tracks.hood.length = 16;
   hood.tracks.hood.current = 0;
-  hood.tracks.hood.slots = [ 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2 ]; // Currently just adding Scheme
+  // Currently just adding Schemes for testing
+  hood.tracks.hood.slots = [ 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2 ];
   hood.tracks.hood.types = [ 0, 0, 1, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2 ];
 
 }
 
+function setupSchemes(){
+  // Setup objects holding scheme details
+}
 
 function testActions(){
   // For testing
   //moveTheHood(hood.vehicle.speeds[hood.vehicle]);
   moveTheHood(2);
-
+  console.log('Next Scheme is in slot ',getNextSchemeIndex());
+  console.log('Distance to the next Scheme is ',getUnsolvedSchemeDistance());
   /*
   while (game.over !== true){
     //let randomInt1 = Math.floor(Math.random * 3);
@@ -97,9 +103,15 @@ function theHoodTurn(){
   let dSuc = getDisastersSolved();
   // Ask if Scheme defeated
   let sSuc = getSchemeSolved();
+  // Work out how far from the unsolved Scheme
+  let hSlotsLeft = getUnsolvedSchemeDistance();
+  // Fewer slots = lower chance of Hood advance
+  let dSlotsLeft = getDisasterDistance();
+
   // Now work out the dangers
   let dDanger = calcDisasterDanger();
   let hDanger = calcHoodDanger();
+
   // Probability of disaster
   let dProb = (8 / dSuc) * dDanger;
   // Probability of Hood advance
@@ -141,6 +153,35 @@ function moveTheHood(spaces){
   console.log('The Hood has moved ' + spaces + ' spaces to ' + locName);
 }
 
+function getNextSchemeIndex(){
+  let cur = hood.tracks.hood.current + 1;
+  let slots = hood.tracks.hood.slots;
+  for (var i = cur; i < slots.length - 1; i++){
+    if (slots[i] === 2){
+      return i;
+    }
+  }
+}
+
+function revealNextScheme(level, slot){
+  let newScheme = {};
+  newScheme.level = level;
+  newScheme.slot = slot;
+  newScheme.requirements = {};
+
+  hood.tracks.hood.slots[slot] = newScheme;
+}
+
+function getUnsolvedSchemeDistance(){
+  let cur = hood.tracks.hood.current;
+  let sch = getNextSchemeIndex();
+  return sch - cur;
+}
+
+function getDisasterDistance(){
+  return (hood.tracks.disaster.length - hood.tracks.disaster.current + 1);
+}
+
 function calcDisasterDanger(){
   return hood.tracks.disaster.current / hood.tracks.disaster.length;
 }
@@ -164,6 +205,7 @@ function addDisasters(count){
     }
   }
   //console.log(dis.slots);
+  hood.tracks.disaster.current += count;
   updateDisasterTable();
 }
 
@@ -182,6 +224,7 @@ function pushDisasters(count){
     }
   }
   //console.log(dis.slots);
+  hood.tracks.disaster.current += count;
   updateDisasterTable();
 }
 
