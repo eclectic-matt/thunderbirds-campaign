@@ -50,7 +50,6 @@ function setupHood(){
   hood.stolenVehicles.count = 7;
   hood.stolenVehicles.speeds = [ 0, 3, 2, 3, 1, 1, 2, 2 ];
   hood.stolenVehicles.names = [
-    'no stolen vehicle',
     'Thunderbird 1',
     'Thunderbird 2',
     'Thunderbird 3',
@@ -59,10 +58,13 @@ function setupHood(){
     'FAB 2',
     'Ladybird Jet'
   ];
+  hood.agents = {};
+  hood.agents.count = 8;
+  hood.agents.slots = [,,,,,,,];  // locations for agents
   hood.active = false;
   hood.base = false;
   hood.location = 1;  // Default to Asia
-  hood.vehicle = 1; // Default to plane
+  hood.vehicle = 1; // Default to none 0, plane 1, sub 2, TB1 4, TB2 5 etc
   hood.tracks = {};
   hood.tracks.disaster = {};
   hood.tracks.disaster.length = 7;
@@ -99,6 +101,42 @@ function testActions(){
 }
 
 function theHoodTurn(){
+
+  /*
+    Phases & Steps (KEY ACTIONS)
+
+    End player phase:
+      CHECK if disaster solved -> Slots
+      CHECK if scheme solved -> Slots
+      CHECK if event solved -> Slots
+      CHECK if hood is captured
+
+    Hood calculation phase:
+      CALCULATE scheme danger level
+      CALCULATE disaster danger level
+
+    Hood deck actions phase - either:
+      - advance hood (low scheme danger) -> CALCULATE if scheme failed
+      - push disaster (low disaster danger and scheme danger) -> CALCULATE if disaster failed
+      - draw event (low disaster danger)
+      - draw disaster (low disaster danger) -> CALCULATE if disaster failed
+      - spy attempt (higher scheme danger) -> Do this in part 2 *
+
+    Hood board actions phase - either:
+      - Escape -> Check Hood vehicle present -> Move
+      - Escape -> Check Hood vehicle present -> Conspire
+      - Escape -> Check if TB vehicle present -> Spy *
+      - Move -> Check TB vehicle present -> Capture
+      - Move -> Check TB vehicle present -> Conspire
+      - Move -> Check if TB vehicle present -> Spy *
+      - Conspire -> Check TB/Hood vehicle present -> Move
+      - Conspire -> Check TB/Hood vehicle present -> Spy *
+
+    Allow next player to go
+
+  */
+
+
   // Ask if disaster(s) solved
   let dSuc = getDisastersSolved();
   // Ask if Scheme defeated
@@ -117,6 +155,7 @@ function theHoodTurn(){
   // Probability of Hood advance
   let hProb = (15 / sSuc) * sDanger;
   // Randomly draw disaster OR hood
+
 
 }
 
@@ -264,6 +303,69 @@ function advanceHood(){
   console.log('Hood moved along the track');
   hTrk.current++;
   updateHoodTable();
+}
+
+function countAvailableAgents(){
+  let agentsArr = hood.agents.slots;
+  let i = agentsArr.length;
+  let count = 0;
+  while (i--) {
+    if (typeof agentsArr[i] === "undefined"){
+      count++;
+      index = i;
+    }
+  }
+  let returnVal = {};
+  returnVal.count = count;
+  returnVal.index = index;
+  console.log('Current there are ',count,' available agents with a space in index ',index);
+  return returnVal;
+}
+
+function hoodConspires(location){
+  let agentsArr = hood.agents.slots;
+  let index = 0;
+  // Check if no agents available
+  let agentInfo = countAvailableAgents();
+  if (agentInfo.count === 0){
+    // Move an existing agent
+    let prevLoc = agentsArr[index];
+    index = agentsArr.length - 1;
+    agentsArr[index] = location;
+    console.log('Agent has been moved from ',prevLoc,' to ',location);
+  }else{
+    index = agentInfo.index;
+    agentsArr[index] = location;
+    console.log('Agent has been placed in ',location);
+  }
+  console.log(agentsArr);
+}
+
+function hoodHijack(stolenVehicleId){
+  hood.vehicle = stolenVehicleId;
+  stolenVehicleName = hood.stolenVehicles.names[stolenVehicleId];
+  hTitle = 'Hood Turn';
+  sTitle = 'The hood has hijacked ' + stolenVehicleName;
+  sDesc = '<p>The Hood has hijacked ' + stolenVehicleName + '!</p><br><p>Ensure the Hood peg is placed in this vehicle.</p><br><b>Was there a Thunderbirds character peg in this vehicle at the time?</b>';
+  lBtn.visible = 'visible';
+  lBtn.inner = 'No';
+  qInput.visible = 'hidden';
+  rBtn.inner = 'Yes';
+  rBtn.onclick = 'hoodCapture()';
+  updatePage(hTitle,sTitle,sDesc,lBtn,qInput,rBtn);
+}
+
+function hoodCapture(){
+  // The hood has captured a player
+  hood.capturedCharacter = true;
+  hTitle = 'Hood Turn';
+  sTitle = 'Captured!';
+  sDesc = '<p>Any characters in that vehicle are now captured!</p><br><p>Use the escape action on your turn to get out of the vehicle!</p><br><b>This concludes the Hood\'s turn</b>';
+  lBtn.visible = 'hidden';
+  qInput.visible = 'hidden';
+  rBtn.inner = 'Next';
+  rBtn.onclick = 'hoodTurnEnd()';
+  updatePage(hTitle,sTitle,sDesc,lBtn,qInput,rBtn);
 }
 
 function updateHoodTable(){
