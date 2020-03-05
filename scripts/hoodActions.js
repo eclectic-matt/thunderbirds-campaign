@@ -1,7 +1,8 @@
 var hood = {};
 var map = {};
 var game = {};
-var schemes = {};
+
+const MAX_SCHEME_DISTANCE = 6;
 
 function setupGame(){
   game.over = false;
@@ -69,7 +70,8 @@ function setupHood(){
   hood.tracks.disaster = {};
   hood.tracks.disaster.length = 7;
   hood.tracks.disaster.current = 0;
-  hood.tracks.disaster.slots = [0, 0, 0, 0, 0, 0, 0];
+  //hood.tracks.disaster.slots = [0, 0, 0, 0, 0, 0, 0];
+  hood.tracks.disaster.slots = [1, 1, 1, 1, 1, 1, 1];
   hood.tracks.hood = {};
   hood.tracks.hood.length = 16;
   hood.tracks.hood.current = 0;
@@ -109,6 +111,7 @@ function theHoodTurn(){
       CHECK if disaster solved -> Slots
       CHECK if scheme solved -> Slots
       CHECK if event solved -> Slots
+      CHECK if ERASE succeeded -> Number
       CHECK if hood is captured
 
     Hood calculation phase:
@@ -136,26 +139,84 @@ function theHoodTurn(){
 
   */
 
-
+  // END PLAYER PHASE //
+  endPlayerScreen();
   // Ask if disaster(s) solved
-  let dSuc = getDisastersSolved();
+  //let dSuc = getDisastersSolved();
   // Ask if Scheme defeated
-  let sSuc = getSchemeSolved();
-  // Work out how far from the unsolved Scheme
-  let hSlotsLeft = getUnsolvedSchemeDistance();
-  // Fewer slots = lower chance of Hood advance
-  let dSlotsLeft = getDisasterDistance();
+  //let sSuc = getSchemeSolved();
+  // Ask if Event solved
+  //let eSuc = getEventSolved();
+  // Ask if hood captured
+  //let hCap = getHoodCaptured();
 
+  // HOOD CALCULATION PHASE //
   // Now work out the dangers
   let dDanger = calcDisasterDanger();
   let hDanger = calcHoodDanger();
+  let highDangerFlag = false;
 
-  // Probability of disaster
-  let dProb = (8 / dSuc) * dDanger;
-  // Probability of Hood advance
-  let hProb = (15 / sSuc) * sDanger;
-  // Randomly draw disaster OR hood
+  if (hDanger >= dDanger){
 
+    // Disaster
+    if (dDanger >= 80){
+      // Flag disaster danger
+      highDangerFlag = true;
+    }else if (dDanger >= 50){
+      drawDisaster(1);
+    }else{
+      pushDisasters(1);
+    }
+
+  }else{
+
+    // Scheme
+    if (hDanger >= 80){
+      // Flag scheme danger
+      highDangerFlag = true;
+    }else if (hDanger >= 50){
+      //hoodSpies();
+      hood.spies = true;
+    }else{
+      advanceHood();
+    }
+
+  }
+
+  // Potential death on next draw
+  if (highDangerFlag === true){
+    // Luck of the draw!
+    let rndVal = Math.random();
+    if (rndVal >= 0.75){
+      advanceHood();
+    }else if (rndVal >= 0.5){
+      drawDisaster();
+    }else if (rndVal >= 0.25){
+      hoodSpies();
+    } else {
+      hoodPlots();
+    }
+
+  }
+
+  if (hood.spies){
+    hoodSpies();
+    hood.actions = 1;
+  }else{
+    hood.actions = 2;
+  }
+
+
+
+  hood.spies = false;
+
+}
+
+
+
+
+
+function getEventSolved(){
 
 }
 
@@ -179,17 +240,17 @@ function moveTheHood(spaces){
   let destIndex = 0;
   let locName = map.names[hood.location];
   let links = 0;
-  console.log('Moving hood ' + spaces + ' spaces, starting in ' + locName);
+  //console.log('Moving hood ' + spaces + ' spaces, starting in ' + locName);
   for (var i = 0; i < spaces; i++){
     links = map.links[hood.location].length;
     destIndex = Math.floor(Math.random() * links);
     hood.location = map.links[hood.location][destIndex];
     // Testing
     locName = map.names[hood.location];
-    console.log(links, destIndex, hood.location, locName);
+    //console.log(links, destIndex, hood.location, locName);
   }
   locName = map.names[hood.location];
-  console.log('The Hood has moved ' + spaces + ' spaces to ' + locName);
+  //console.log('The Hood has moved ' + spaces + ' spaces to ' + locName);
 }
 
 function getNextSchemeIndex(){
@@ -222,11 +283,25 @@ function getDisasterDistance(){
 }
 
 function calcDisasterDanger(){
-  return hood.tracks.disaster.current / hood.tracks.disaster.length;
+  const arrSum = arr => arr.reduce((a,b) => a + b, 0);
+  let trkLen = hood.tracks.disaster.length;
+  let hSlotFilled = hood.tracks.disaster.current;
+  let slots = hood.tracks.disaster.slots;
+  let tSlotsFilled = arrSum(slots);
+  //console.log(hSlotFilled,tSlotsFilled,trkLen,slots);
+  let dDanger = ( (0.5 * (hSlotFilled / trkLen)) + (0.5 * (tSlotsFilled / trkLen))) * 100;
+  //console.log('Disaster danger ',dDanger);
+  return dDanger;
+  //return hood.tracks.disaster.current / hood.tracks.disaster.length;
 }
 
 function calcHoodDanger(){
-  return hood.tracks.hood.current / hood.tracks.hood.length;
+  let dist = getUnsolvedSchemeDistance();
+  let max = MAX_SCHEME_DISTANCE;
+  let hDanger = ((1 - ( (dist - 1) / max )) * 100);
+  //console.log(dist,max,hDanger);
+  return hDanger;
+  //return hood.tracks.hood.current / hood.tracks.hood.length;
 }
 
 // NOTE: count means you have the option to push more than once
@@ -240,7 +315,7 @@ function addDisasters(count){
       return;
     }else{
       dis.slots.unshift(1);
-      console.log('A new disaster has been added to the track');
+      //console.log('A new disaster has been added to the track');
     }
   }
   //console.log(dis.slots);
@@ -259,25 +334,12 @@ function pushDisasters(count){
       return;
     }else{
       dis.slots.unshift(0);
-      console.log('Disasters have been pushed along the track');
+      //console.log('Disasters have been pushed along the track');
     }
   }
   //console.log(dis.slots);
   hood.tracks.disaster.current += count;
   updateDisasterTable();
-}
-
-function updateDisasterTable(){
-  let dis = hood.tracks.disaster.slots;
-  for (let i = 0; i < dis.length; i++){
-    let thisCell = document.getElementById('disaster' + (i+1));
-    let thisDis = dis[i];
-    if (thisDis !== 0){
-      thisCell.innerHTML = 'Disaster';
-    }else{
-      thisCell.innerHTML = 'None';
-    }
-  }
 }
 
 /*
@@ -382,4 +444,14 @@ function updateHoodTable(){
 function gameOver(){
   game.over = true;
   console.log('Game Over!');
+  hTitle = 'Game Over';
+  sTitle = 'The Hood has beaten the Thunderbirds!';
+  sDesc = '<p>The game has been lost!</p><br><p>You can restart the game using the red button below - or resume from <em>the start of this month</em> using the green button below.</p><br><b>You can do it - you almost had him!</b>';
+  lBtn.visible = 'visible';
+  lBtn.inner = 'Restart Campaign';
+  lBtn.onclick = 'restartCampaign()';
+  qInput.visible = 'hidden';
+  rBtn.inner = 'Resume From Month Start';
+  rBtn.onclick = 'restartMonth()';
+  updatePage(hTitle,sTitle,sDesc,lBtn,qInput,rBtn);
 }

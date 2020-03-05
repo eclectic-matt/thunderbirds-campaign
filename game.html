@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <style>
+  <link rel='stylesheet' href='https://www.w3schools.com/w3css/4/w3.css' />
+
+  <script src='./scripts/campaign.js'></script>
+  <script src='./scripts/hoodActions.js'></script>
+  <script src='./scripts/setupPages.js'></script>
+  <script src='./scripts/pageUpdates.js'></script>
+
+  <style defer>
     .game-container{
       height: 100%;
       width: 100%;
@@ -30,16 +37,36 @@
       table-layout: fixed;
       text-align: center;
     }
+
+    td:first-of-type, th:first-of-type {
+      padding: 5px !important;
+    }
+
     td, th {
       border: 1px solid black;
     }
 
-  </style>
-  <link rel='stylesheet' href='https://www.w3schools.com/w3css/4/w3.css' />
+    #trkDiv {
+      animation-name: slideDown;
+      animation-duration: 1s;
+      transition: top 1s ease-out;
+    }
 
-  <script src='./scripts/campaign.js'></script>
-  <script src='./scripts/hoodActions.js'></script>
-  <script src='./scripts/setupPages.js'></script>
+    @keyframes slideDown {
+      from {top: -100px;}
+      to {top: 0px;}
+    }
+
+    @keyframes slideUp {
+      from {top: 0px;}
+      to {top: -100px;}
+    }
+
+    formgroup {
+      border: 1px solid black;
+    }
+
+  </style>
 
 </head>
 <body onload='startup()'>
@@ -64,7 +91,8 @@
     </div>
 
     <!-- TRACK AREA HOOD/DISASTER -->
-    <div class='track-row w3-row-padding w3-border'>
+    <button class='w3-btn w3-blue w3-full' onclick='showHideTracks()'>Show/Hide Tracks</button>
+    <div id='trkDiv' class='track-row w3-row-padding w3-border'>
 
       <div class='w3-row-padding w3-center'>
         <h2>The Hood Track</h2>
@@ -132,11 +160,15 @@
         </table>
       </div>
 
+      <br>
+
     </div>
 
     <!-- SECTION AREA TITLE/DESCRIPTION -->
     <div class='section-container w3-padding-large'>
 
+      <br>
+      
       <div class='section-header w3-center'>
         <h2 id='sectionTitle'>Section Title</h2>
       </div>
@@ -148,7 +180,7 @@
     </div>
 
     <!-- ACTIONS AREA YES/NO/QUANTITY -->
-    <div class='footer-row w3-row-padding w3-border'>
+    <div id='divActions' class='footer-row w3-row-padding w3-border'>
 
       <div class='footer-left-btn-container w3-center w3-col s3'>
         <button id='leftBtn' class='footer-left-btn w3-btn w3-red'>NO</button>
@@ -163,6 +195,128 @@
       </div>
 
     </div>
+
+
+    <form action="" id="frmEndPlayer">
+
+      <formgroup id="frmGrpDisasters" class="w3-center w3-card-8 w3-border">
+        <h2>Was a disaster solved this turn?</h2>
+        <div class="w3-center">
+          <input onchange="showHideDisasterSlots(1)" class="w3-radio w3-center" type="radio" name="disaster" value="Yes">
+          <label>Yes</label>
+
+          <input onchange="showHideDisasterSlots(0)" class="w3-radio" type="radio" name="disaster" value="No" checked>
+          <label>No</label>
+        </div>
+
+        <div id='divSolvedDisasters' style="display:none;">
+          <h2>Please check the solved disaster slots:</h2>
+          <!-- Stuff inside div below get deleted -->
+          <div id='divSolvedDisasterSlots'>
+            <div class="w3-row-padding">
+              <div class="w3-quarter">
+                <input class="w3-check" type="checkbox" checked="checked">
+                <label>Slot 1</label>
+              </div>
+              <div class="w3-quarter">
+                <input class="w3-check" type="checkbox" checked="checked">
+                <label>Slot 2</label>
+              </div>
+              <div class="w3-quarter">
+                <input class="w3-check" type="checkbox" checked="checked">
+                <label>Slot 4</label>
+              </div>
+              <div class="w3-quarter">
+                <input class="w3-check" type="checkbox" checked="checked">
+                <label>Slot 5</label>
+              </div>
+            </div>
+          </div>
+        <!-- Stuff inside div above get deleted -->
+        </div>
+
+      </formgroup>
+
+      <formgroup id="frmGrpSchemes" class="w3-center w3-card-8 w3-border">
+
+        <h2>Was a scheme solved this turn?</h2>
+        <div class="w3-center">
+          <input onchange="showHideSchemeSlots(1)" class="w3-radio w3-center" type="radio" name="scheme" value="Yes">
+          <label>Yes</label>
+
+          <input onchange="showHideSchemeSlots(0)" class="w3-radio" type="radio" name="scheme" value="No" checked>
+          <label>No</label>
+        </div>
+
+        <div id='divSolvedSchemes' style="display:none;">
+          <h2>Please check the solved scheme slots:</h2>
+          <div class="w3-row-padding">
+            <div class="w3-third">
+              <input class="w3-check" type="checkbox" checked="checked">
+              <label>Slot 1</label>
+            </div>
+            <div class="w3-third">
+              <input class="w3-check" type="checkbox" checked="checked">
+              <label>Slot 2</label>
+            </div>
+            <div class="w3-third">
+              <input class="w3-check" type="checkbox" checked="checked">
+              <label>Slot 3</label>
+            </div>
+          </div>
+        </div>
+
+      </formgroup>
+
+      <formgroup id="frmGrpEvents" class="w3-center w3-card-8 w3-border">
+
+        <h2>Was an event solved this turn?</h2>
+        <div class="w3-center">
+          <input onchange="showHideEventSlots(1)" class="w3-radio w3-center" type="radio" name="event" value="Yes">
+          <label>Yes</label>
+
+          <input onchange="showHideEventSlots(0)" class="w3-radio" type="radio" name="event" value="No" checked>
+          <label>No</label>
+        </div>
+
+        <div id='divSolvedEvents' style="display:none;">
+          <h2>Please check the solved event slots:</h2>
+          <div class="w3-row-padding">
+            <div class="w3-quarter">
+              <input class="w3-check" type="checkbox" checked="checked">
+              <label>Event Slot 1</label>
+            </div>
+            <div class="w3-quarter">
+              <input class="w3-check" type="checkbox" checked="checked">
+              <label>Event Slot 2</label>
+            </div>
+            <div class="w3-quarter">
+              <input class="w3-check" type="checkbox" checked="checked">
+              <label>Event Slot 3</label>
+            </div>
+            <div class="w3-quarter">
+              <input class="w3-check" type="checkbox" checked="checked">
+              <label>Event Slot 4</label>
+            </div>
+          </div>
+        </div>
+
+      </formgroup>
+
+      <formgroup id="frmGrpCaptured" class="w3-center w3-card-8 w3-border">
+
+        <h2>Was the Hood captured this turn?</h2>
+        <div class="w3-center">
+          <input class="w3-radio w3-center" type="radio" name="capture" value="Yes">
+          <label>Yes</label>
+
+          <input class="w3-radio" type="radio" name="capture" value="No" checked>
+          <label>No</label>
+        </div>
+
+      </formgroup>
+
+    </form>
 
 
 

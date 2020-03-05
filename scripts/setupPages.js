@@ -2,7 +2,6 @@
 
 function showSetup(page){
 
-  var hTitle, sTitle, sDesc, lBtn = {}, qInput = {}, rBtn = {};
   page = page || 1;
 
   if (page === 1){
@@ -38,7 +37,19 @@ function showSetup(page){
     lBtn.visible = 'hidden';
     qInput.visible = 'hidden';
     rBtn.inner = 'Next';
-    rBtn.onclick = 'showSetup(3)';
+    rBtn.onclick = 'showSetup(4)';
+
+  }else if (page === 4){
+
+    console.log('setup p4 - players');
+    hTitle = 'Setup';
+    sTitle = 'Players and Characters';
+    sDesc = '<p>Please select the number of players, as well as each player and character names - these will be used to help the app keep the game flowing.</p><br><em>Please note: this will also determine the player order for the game - so enter the details for the first player in the first slot, then subsequent players in order.</em><br>';
+    sDesc += 'Player 1: <input id="p1name" type="text" placeholder="Player 1 Name"></input> <select id="p1char"><option value="Scott" selected>Scott</option><option value="John">John</option></select>';
+    lBtn.visible = 'hidden';
+    qInput.visible = 'hidden';
+    rBtn.inner = 'Next';
+    rBtn.onclick = 'confirmPlayers()';
 
   }
 
